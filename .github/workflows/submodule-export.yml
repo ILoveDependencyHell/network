@@ -34,7 +34,7 @@ jobs:
           BLACKLIST=".github/submodule-blacklist.txt"
           echo "BLACKLIST=$BLACKLIST" >> $GITHUB_ENV
 
-          HEADER="cat .github/gdscript-code-header.txt"
+          HEADER="{cat .github/gdscript-code-header.txt}"
           echo "HEADER=$HEADER" >> $GITHUB_ENV
 
       - name: Create export branch
