@@ -46,8 +46,7 @@ jobs:
           done < "$BLACKLIST"
       - name: Prepend header to GD script files
         run: |
-          HEADER="
-          # This file is auto-generated
+          HEADER="# This file is auto-generated
           # Do not edit manually"
           
           # Loop through all .gd files recursively
