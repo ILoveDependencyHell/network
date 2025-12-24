@@ -1,6 +1,13 @@
-project.godot
-.github/
-Network.tscn
+# Git specific
 .gitignore
 .gitmodules
+.github/
+
+# Godot specific
+project.godot
+
+# Submodule folders
 Utils/
+
+# Project specific
+Network.tscn

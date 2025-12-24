@@ -20,19 +20,29 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git config user.name "submodule-action"
+          git config user.email "git@liamsherwin.com"
+
+      - name: Set global variables
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          echo "REPO_NAME=$REPO_NAME" >> $GITHUB_ENV
+
+          EXPORT_BRANCH="${REPO_NAME}-submodule"
+          echo "EXPORT_BRANCH=$EXPORT_BRANCH" >> $GITHUB_ENV
+
+          BLACKLIST=".github/submodule-blacklist.txt"
+          echo "BLACKLIST=$BLACKLIST" >> $GITHUB_ENV
+
+          HEADER=".github/gdscript-code-header.txt"
+          echo "HEADER=$HEADER" >> $GITHUB_ENV
 
       - name: Create export branch
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY##*/}"
-          EXPORT_BRANCH="${REPO_NAME}-submodule"
           git checkout -B "$EXPORT_BRANCH" origin/main
       
       - name: Apply blacklist
         run: |
-          BLACKLIST=".github/submodule-blacklist.txt"
-
           if [ ! -f "$BLACKLIST" ]; then
             echo "Missing blacklist file: $BLACKLIST"
             exit 1
@@ -44,29 +54,22 @@ jobs:
             echo "Removing: $line"
             rm -rf $line
           done < "$BLACKLIST"
+
       - name: Prepend header to GD script files
         run: |
-          HEADER="# This file is auto-generated
-          # Do not edit manually"
-          
-          # Loop through all .gd files recursively
           find . -name "*.gd" | while read file; do
-            # Skip empty files
             [ -s "$file" ] || continue
-            # Skip if header already exists
-            grep -q "This file is auto-generated" "$file" && continue
             tmpfile=$(mktemp)
             echo "$HEADER" > "$tmpfile"
             cat "$file" >> "$tmpfile"
             mv "$tmpfile" "$file"
           done
+
       - name: Commit Changes
         run: |
-            git add -A
-            git commit -m "Submodule Export"
+          git add -A
+          git commit -m "Submodule Export"
 
       - name: Push export branch
         run: |
-          REPO_NAME="${GITHUB_REPOSITORY##*/}"
-          EXPORT_BRANCH="${REPO_NAME}-submodule"
           git push --set-upstream origin "$EXPORT_BRANCH" --force
