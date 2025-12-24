@@ -1,0 +1,57 @@
+name: Submodule Export Branch
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Create export branch
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          EXPORT_BRANCH="${REPO_NAME}-submodule"
+          git checkout -B "$EXPORT_BRANCH" origin/main
+      
+      - name: Apply blacklist
+        run: |
+          BLACKLIST=".github/submodule-blacklist.txt"
+
+          if [ ! -f "$BLACKLIST" ]; then
+            echo "Missing blacklist file: $BLACKLIST"
+            exit 1
+          fi
+
+          echo "Removing blacklisted paths:"
+          while IFS= read -r line || [ -n "$line" ]; do
+            [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
+            echo "Removing: $line"
+            rm -rf $line
+          done < "$BLACKLIST"
+
+      - name: Commit Changes
+        run: |
+            git add -A
+            git commit -m "Submodule Export"
+
+      - name: Push export branch
+        run: |
+          REPO_NAME="${GITHUB_REPOSITORY##*/}"
+          EXPORT_BRANCH="${REPO_NAME}-submodule"
+          git push --set-upstream origin "$EXPORT_BRANCH" --force
