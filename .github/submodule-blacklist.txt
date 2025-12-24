@@ -1,7 +1,6 @@
 project.godot
 .github/
 Network.tscn
-*.uid
 .gitignore
 .gitmodules
 Utils/
