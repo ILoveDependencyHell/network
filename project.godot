@@ -11,4 +11,5 @@ config_version=5
 [application]
 
 config/name="Network"
+run/main_scene="uid://cu6v4olncd3t7"
 config/features=PackedStringArray("4.5")
