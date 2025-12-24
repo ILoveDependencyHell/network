@@ -1,4 +1,0 @@
-[submodule "Utils"]
-	path = Utils
-	url = https://github.com/ILoveDependencyHell/utils
-	branch = utils-submodule
